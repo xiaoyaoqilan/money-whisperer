@@ -9,6 +9,8 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any, Dict, Iterable
 
+from app.suitability import evaluate_suitability
+
 
 IMPULSIVE_TERMS = ("清仓", "满仓", "梭哈", "抄底", "追涨", "借钱", "马上买", "马上卖")
 FEAR_TERMS = ("害怕", "恐慌", "焦虑", "睡不着", "后悔", "怕错过")
@@ -31,6 +33,7 @@ def assess_decision(data: Dict[str, Any]) -> Dict[str, Any]:
     risky_asset_pct = _clamp(float(data.get("risky_asset_pct") or 0), 0, 100)
     market_change_pct = _clamp(float(data.get("market_change_pct") or 0), -100, 100)
     goal_changed = bool(data.get("goal_changed", False))
+    suitability = evaluate_suitability(data)
 
     signals = []
     score = 0
@@ -105,6 +108,7 @@ def assess_decision(data: Dict[str, Any]) -> Dict[str, Any]:
         ],
         "requires_user_confirmation": True,
         "professional_review_recommended": score >= 60,
+        "suitability": suitability,
         "disclaimer": "本工具只用于理财教育和决策整理，不构成投资建议，也不执行任何交易。",
         "created_at": datetime.now(timezone.utc).isoformat(),
     }

@@ -42,10 +42,11 @@ h1 em { color: var(--red); font-style: normal; }
 h2, .panel-heading p { margin: 0; }
 .panel-heading p { margin-top: 4px; color: var(--muted); font-size: 13px; }
 label { display: grid; gap: 8px; margin-top: 16px; font-size: 13px; font-weight: 700; }
-input, textarea { width: 100%; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.7); color: var(--ink); padding: 13px 14px; font: inherit; outline: none; }
-input:focus, textarea:focus { border-color: var(--sage); box-shadow: 0 0 0 3px rgba(142,170,152,.16); }
+input, textarea, select { width: 100%; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.7); color: var(--ink); padding: 13px 14px; font: inherit; outline: none; }
+input:focus, textarea:focus, select:focus { border-color: var(--sage); box-shadow: 0 0 0 3px rgba(142,170,152,.16); }
 textarea { min-height: 88px; resize: vertical; line-height: 1.6; }
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.module-label { margin: 24px 0 2px; border-top: 1px solid var(--line); padding-top: 20px; color: #62796b; font-size: 11px; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; }
 .check { display: flex; align-items: center; gap: 10px; font-weight: 500; }
 .check input { width: 18px; height: 18px; accent-color: var(--ink); }
 button { width: 100%; margin-top: 22px; border: 0; border-radius: 15px; background: var(--ink); color: white; padding: 15px 18px; font-size: 15px; font-weight: 800; cursor: pointer; display: flex; justify-content: space-between; }
@@ -69,6 +70,15 @@ button:disabled { opacity: .55; cursor: wait; }
 .section h4 { margin: 0 0 12px; font-size: 13px; letter-spacing: .08em; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { border: 1px solid rgba(210,100,79,.25); border-radius: 999px; background: rgba(210,100,79,.08); color: #914739; padding: 7px 10px; font-size: 12px; }
+.gate { border-radius: 18px; background: rgba(142,170,152,.12); padding: 18px; }
+.gate-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.gate-heading h4 { margin: 0; }
+.gate-heading span { border-radius: 999px; background: white; padding: 6px 9px; color: #62796b; font-size: 11px; font-weight: 800; }
+.gate > p { margin: 12px 0; color: #4f5b54; font-size: 13px; line-height: 1.6; }
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0; }
+.metric { border-radius: 12px; background: rgba(255,255,255,.7); padding: 10px; }
+.metric span { display: block; color: var(--muted); font-size: 10px; }
+.metric strong { display: block; margin-top: 4px; font: 18px Georgia, serif; }
 ol, ul { margin: 0; padding-left: 22px; color: #4f5b54; line-height: 1.75; }
 li + li { margin-top: 7px; }
 .notice { margin-top: 22px; border-radius: 16px; background: var(--ink); color: white; padding: 16px; }

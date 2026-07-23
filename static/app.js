@@ -28,6 +28,11 @@ form.addEventListener("submit", async (event) => {
     market_change_pct: Number(data.get("market_change_pct")),
     intended_action: data.get("intended_action"),
     goal_changed: data.get("goal_changed") === "on",
+    monthly_income: Number(data.get("monthly_income")),
+    monthly_expenses: Number(data.get("monthly_expenses")),
+    monthly_debt_payment: Number(data.get("monthly_debt_payment")),
+    liquid_savings: Number(data.get("liquid_savings")),
+    risk_tolerance: data.get("risk_tolerance"),
   };
 
   try {
@@ -54,6 +59,27 @@ form.addEventListener("submit", async (event) => {
     }));
     fillList("#questions", body.reflection_questions);
     fillList("#steps", body.safe_next_steps);
+    const gate = body.suitability;
+    document.querySelector("#gate-status").textContent =
+      gate.status === "restricted" ? "仅限教育" : gate.status === "caution" ? "谨慎讨论" : "可讨论一般原则";
+    document.querySelector("#gate-summary").textContent = gate.plain_language;
+    const gateMetrics = [
+      ["月结余", `¥${gate.profile.monthly_surplus.toLocaleString()}`],
+      ["应急覆盖", `${gate.profile.emergency_coverage_months} 个月`],
+      ["偿债负担", `${gate.profile.debt_burden_pct}%`],
+    ];
+    const metrics = document.querySelector("#gate-metrics");
+    metrics.replaceChildren(...gateMetrics.map(([label, value]) => {
+      const node = document.createElement("div");
+      node.className = "metric";
+      const name = document.createElement("span");
+      const number = document.createElement("strong");
+      name.textContent = label;
+      number.textContent = value;
+      node.append(name, number);
+      return node;
+    }));
+    fillList("#gate-reasons", [...gate.hard_stops, ...gate.cautions]);
 
     empty.classList.add("hidden");
     result.classList.remove("hidden");

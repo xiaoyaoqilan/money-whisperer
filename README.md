@@ -14,6 +14,20 @@
   -> 用户回答三个问题并自行确认
 ```
 
+## 度小满赛道对应模块
+
+`app/suitability.py` 是建议生成前的「用户适当性与合规门控」：
+
+1. 汇总收入、必要支出、负债、流动储备、目标期限和风险承受力。
+2. 识别负现金流、偿债压力、应急金不足和风险错配。
+3. 决定 AI 允许输出的建议层级：
+   - `education_only`：只做风险教育和信息补全。
+   - `planning_discussion`：可以讨论规划原则，但必须再次确认。
+   - `general_allocation`：可以讨论一般配置原则。
+4. 无论哪一层，都禁止具体证券指令、收益承诺和自动交易。
+
+该模块对应赛道要求中的建议边界、合规机制、异常处理和人工介入机制。
+
 ## 本地运行
 
 ```powershell
@@ -38,8 +52,19 @@ Content-Type: application/json
   "risky_asset_pct": 75,
   "market_change_pct": -10,
   "intended_action": "我很害怕继续下跌，想马上清仓",
-  "goal_changed": false
+  "goal_changed": false,
+  "monthly_income": 10000,
+  "monthly_expenses": 5000,
+  "monthly_debt_payment": 1000,
+  "liquid_savings": 10000,
+  "risk_tolerance": "medium"
 }
+```
+
+只运行适当性门控：
+
+```http
+POST /api/suitability
 ```
 
 ## 与 AgentOS 的关系

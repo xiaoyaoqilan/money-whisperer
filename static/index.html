@@ -31,6 +31,22 @@
             <label>高波动资产占比（%）<input name="risky_asset_pct" type="number" min="0" max="100" value="75" required /></label>
             <label>近期市场涨跌（%）<input name="market_change_pct" type="number" min="-100" max="100" value="-10" required /></label>
           </div>
+          <div class="module-label">适当性与合规门控</div>
+          <div class="two">
+            <label>每月税后收入<input name="monthly_income" type="number" min="0" value="10000" required /></label>
+            <label>每月必要生活支出<input name="monthly_expenses" type="number" min="0" value="5000" required /></label>
+          </div>
+          <div class="two">
+            <label>每月偿债金额<input name="monthly_debt_payment" type="number" min="0" value="1000" required /></label>
+            <label>可随时使用的储蓄<input name="liquid_savings" type="number" min="0" value="10000" required /></label>
+          </div>
+          <label>你能承受多大波动？
+            <select name="risk_tolerance">
+              <option value="low">低：更在意本金稳定</option>
+              <option value="medium" selected>中：能接受一定波动</option>
+              <option value="high">高：理解并能承受较大波动</option>
+            </select>
+          </label>
           <label>你现在想做什么？<textarea name="intended_action" required>我很害怕继续下跌，想马上清仓</textarea></label>
           <label class="check"><input name="goal_changed" type="checkbox" /><span>我的生活目标或用钱时间确实已经变化</span></label>
           <button id="submit-button" type="submit">先帮我冷静一下 <span>→</span></button>
@@ -54,6 +70,12 @@
             </div>
             <h3 id="headline"></h3>
             <div class="section"><h4>为什么需要停一下</h4><div id="signals" class="chips"></div></div>
+            <div class="section gate">
+              <div class="gate-heading"><h4>建议许可边界</h4><span id="gate-status"></span></div>
+              <p id="gate-summary"></p>
+              <div id="gate-metrics" class="metrics"></div>
+              <ul id="gate-reasons"></ul>
+            </div>
             <div class="section"><h4>回答这三个问题</h4><ol id="questions"></ol></div>
             <div class="section"><h4>现在可以做的安全动作</h4><ul id="steps"></ul></div>
             <div class="notice"><strong>边界</strong><p id="disclaimer"></p></div>
