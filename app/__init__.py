@@ -1,0 +1,1 @@
+"""Money Whisperer standalone application."""

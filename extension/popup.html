@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>冷静一下｜回头是岸</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="popup-container">
+    <!-- 头部 -->
+    <header class="popup-header">
+      <div class="popup-logo">
+        <span class="logo-icon">🛡</span>
+        <div>
+          <h1>回头是岸</h1>
+          <p class="logo-sub">金融劝退Agent · 后台守护中</p>
+        </div>
+      </div>
+      <div class="status-dot" id="statusDot" title="监控状态"></div>
+    </header>
+
+    <!-- 今日统计 -->
+    <section class="stats-section">
+      <h2 class="section-title">📊 今日统计</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-value" id="todayMinutes">--</span>
+          <span class="stat-label">盯盘分钟</span>
+        </div>
+        <div class="stat-card warn">
+          <span class="stat-value" id="warningCount">--</span>
+          <span class="stat-label">已劝次数</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="activeTabs">--</span>
+          <span class="stat-label">活跃窗口</span>
+        </div>
+      </div>
+
+      <!-- 本周统计 -->
+      <div class="weekly-mini">
+        <span class="weekly-mini-title">📅 本周</span>
+        <span><strong id="weeklyMinutes">--</strong> 分钟</span>
+        <span class="weekly-sep">·</span>
+        <span><strong id="weeklyDays">--</strong> 天活跃</span>
+        <span class="weekly-sep">·</span>
+        <span><strong id="weeklyWarnings">--</strong> 次警告</span>
+      </div>
+
+      <!-- 劝退成功率 -->
+      <div class="dissuasion-mini">
+        <span>🛡 劝退成功率</span>
+        <span class="diss-rate" id="dissRate">--%</span>
+        <span class="diss-detail" id="dissDetail"></span>
+      </div>
+
+      <!-- 域名排行 -->
+      <div id="domainList" class="domain-list hidden">
+        <h3>花时间最多的站点</h3>
+        <div id="domainItems"></div>
+      </div>
+    </section>
+
+    <!-- 设置 -->
+    <section class="settings-section">
+      <h2 class="section-title">⚙ 设置</h2>
+
+      <div class="setting-row">
+        <label class="setting-label">
+          <span>总开关</span>
+          <small>关闭后不再弹出劝退提醒</small>
+        </label>
+        <label class="toggle">
+          <input type="checkbox" id="enabledToggle" checked />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-row">
+        <label class="setting-label" for="warnLevel1">
+          <span>⏰ 轻提醒</span>
+          <small>累计盯盘超过此秒数后弹出温和提醒</small>
+        </label>
+        <div class="input-with-unit">
+          <input type="number" id="warnLevel1" min="10" max="300" step="5" value="30" />
+          <span>秒</span>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <label class="setting-label" for="warnLevel2">
+          <span>⚠️ 严正警告</span>
+          <small>超过此秒数后弹出最后通牒</small>
+        </label>
+        <div class="input-with-unit">
+          <input type="number" id="warnLevel2" min="10" max="300" step="5" value="60" />
+          <span>秒</span>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <label class="setting-label" for="warnLevel3">
+          <span>📅 周报生成</span>
+          <small>超过此秒数后自动抓拍+生成Diss周报</small>
+        </label>
+        <div class="input-with-unit">
+          <input type="number" id="warnLevel3" min="10" max="600" step="5" value="90" />
+          <span>秒</span>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <label class="setting-label" for="cooldownInput">
+          <span>周报冷却</span>
+          <small>生成周报后至少间隔多久才能再次生成</small>
+        </label>
+        <div class="input-with-unit">
+          <input type="number" id="cooldownInput" min="1" max="180" value="30" />
+          <span>分钟</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 金句 -->
+    <div class="quote-box" id="quoteBox">
+      <p id="quoteText">加载中……</p>
+    </div>
+
+    <!-- 底部操作 -->
+    <footer class="popup-footer">
+      <button class="btn-secondary" id="resetBtn">🔄 重置今日数据</button>
+      <button class="btn-primary" id="saveBtn">💾 保存设置</button>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

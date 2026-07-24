@@ -1,0 +1,360 @@
+/* ============================================================
+   冷静一下｜回头是岸
+   超时 → 自动抓拍 → 即时《回头是岸》周报
+   ============================================================ */
+
+#money-whisperer-overlay {
+  --mw-ink: #1a1d1c; --mw-red: #d2644f; --mw-red-light: #f09078;
+  --mw-paper: #f5f2e9; --mw-gold: #c9a96e; --mw-green: #8eaa98;
+  --mw-muted: #6b7280;
+
+  position: fixed; inset: 0; z-index: 2147483646;
+  font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+  line-height: 1.6; -webkit-font-smoothing: antialiased;
+}
+#money-whisperer-overlay *,
+#money-whisperer-overlay *::before,
+#money-whisperer-overlay *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ---- Backdrop ---- */
+.mw-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(18,20,20,0.72);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  animation: mw-fade-in 0.4s ease-out;
+}
+
+/* ---- Shared Dialog ---- */
+.mw-dialog {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  max-height: calc(100vh - 32px); overflow-y: auto;
+  border-radius: 24px;
+  background: linear-gradient(165deg, #1e2422 0%, #151918 100%);
+  color: #e8e4da;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 32px 80px rgba(0,0,0,0.55);
+  animation: mw-slide-up 0.45s cubic-bezier(0.22,0.61,0.36,1);
+}
+
+/* ---- Light backdrop for L1 ---- */
+.mw-backdrop-light {
+  background: rgba(18,20,20,0.45) !important;
+  backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+}
+
+/* ---- Level 1: 5min gentle reminder ---- */
+.mw-dialog-l1 {
+  width: min(480px, calc(100vw - 40px));
+  padding: 0; overflow: hidden; border-radius: 22px;
+}
+.mw-l1-content {
+  padding: 32px 28px 20px; text-align: center;
+}
+.mw-l1-icon { font-size: 44px; display: block; margin-bottom: 12px; }
+.mw-l1-content h3 { font-family: Georgia,"Noto Serif SC",serif; font-size: 20px; font-weight: 700; color: #fff; margin: 0 0 10px; line-height: 1.5; }
+.mw-l1-content h3 strong { color: var(--mw-gold); }
+.mw-l1-content p { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.8; margin: 0; }
+.mw-l1-domain { color: var(--mw-red-light); font-weight: 600; }
+.mw-l1-hint { margin-top: 14px !important; font-size: 12px !important; color: rgba(255,255,255,0.3) !important; font-style: italic; }
+.mw-l1-dismiss {
+  display: block; width: 100%; padding: 14px; border: none; border-top: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.6);
+  font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.mw-l1-dismiss:hover { background: rgba(210,100,79,0.1); color: #fff; }
+
+/* ---- Level 2: 10min strong warning ---- */
+.mw-dialog-l2 {
+  width: min(600px, calc(100vw - 32px));
+}
+/* Reuses .mw-header, .mw-skull, .mw-body, .mw-stat-row, .mw-footer from report styles */
+
+/* ---- Capture Dialog (smaller, focused) ---- */
+.mw-dialog-capture {
+  width: min(560px, calc(100vw - 32px));
+  padding: 0; overflow: hidden;
+}
+
+/* ---- Report Dialog (wider) ---- */
+.mw-dialog-report { width: min(780px, calc(100vw - 24px)); }
+.mw-dialog-report-full { width: min(820px, calc(100vw - 24px)); }
+
+/* ============================================================
+   CAPTURE PHASE
+   ============================================================ */
+
+.mw-capture-header {
+  padding: 28px 28px 0; text-align: center;
+}
+.mw-capture-badge {
+  display: inline-block; padding: 6px 16px; border-radius: 999px;
+  background: rgba(201,169,110,0.15); color: var(--mw-gold);
+  font-size: 12px; font-weight: 700; letter-spacing: 0.06em; margin-bottom: 12px;
+}
+.mw-capture-header h2 {
+  font-family: Georgia, "Noto Serif SC", serif;
+  font-size: 24px; font-weight: 700; color: #fff; letter-spacing: 0.03em;
+}
+.mw-capture-sub {
+  margin-top: 8px; font-size: 14px; color: rgba(255,255,255,0.45);
+}
+.mw-capture-privacy {
+  margin-top: 6px; font-size: 11px; color: rgba(255,255,255,0.25);
+}
+
+/* Video area */
+.mw-capture-area {
+  position: relative; margin: 18px 28px 0;
+  border-radius: 18px; overflow: hidden;
+  background: #000; min-height: 280px;
+  display: flex; align-items: center; justify-content: center;
+}
+.mw-cap-video {
+  width: 100%; display: block; object-fit: cover;
+  min-height: 280px; max-height: 400px;
+}
+
+/* Countdown overlay on top of video */
+.mw-cap-overlay {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.45);
+  pointer-events: none;
+}
+.mw-cap-countdown-icon { font-size: 36px; margin-bottom: 4px; }
+.mw-cap-countdown-num {
+  font-family: Georgia, serif; font-size: 72px; font-weight: 700;
+  color: #fff; line-height: 1;
+  transition: transform 0.15s ease-out;
+  text-shadow: 0 0 30px rgba(255,255,255,0.5);
+}
+.mw-cap-countdown-label {
+  font-size: 14px; color: rgba(255,255,255,0.6); margin-top: 4px;
+}
+.mw-cap-placeholder-icon { font-size: 56px; margin-bottom: 8px; }
+.mw-cap-done-icon { font-size: 48px; margin-bottom: 4px; animation: mw-pulse 0.4s ease-out; }
+
+/* Flash effect */
+.mw-cap-flash {
+  position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none;
+}
+.mw-cap-flash-anim { animation: mw-flash 0.35s ease-out; }
+@keyframes mw-flash {
+  0% { opacity: 0; } 30% { opacity: 0.9; } 100% { opacity: 0; }
+}
+
+.mw-cap-status {
+  text-align: center; font-size: 13px; color: rgba(255,255,255,0.4);
+  padding: 12px 28px 20px;
+}
+
+/* ============================================================
+   REPORT PHASE
+   ============================================================ */
+
+.mw-report-header-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 28px; flex-shrink: 0;
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  font-size: 13px; color: rgba(255,255,255,0.6);
+}
+.mw-report-header-badge {
+  margin-left: auto; padding: 3px 12px; border-radius: 999px;
+  background: rgba(210,100,79,0.2); color: var(--mw-red-light);
+  font-size: 11px; font-weight: 700;
+}
+
+.mw-body { padding: 28px 32px; }
+.mw-body-report { padding: 20px 28px; }
+
+/* ---- Section ---- */
+.mw-report-section {
+  margin-top: 24px; padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.mw-report-section:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+.mw-report-section h3 {
+  font-family: Georgia, "Noto Serif SC", serif;
+  font-size: 18px; font-weight: 700; color: #fff;
+  margin-bottom: 14px; letter-spacing: 0.03em;
+}
+
+/* ---- 📸 Photo ---- */
+.mw-photo-section { text-align: center; }
+.mw-photo-container {
+  display: inline-block; max-width: 300px;
+  border-radius: 18px; overflow: hidden;
+  border: 2px solid rgba(255,255,255,0.1);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.mw-photo-img { width: 100%; display: block; }
+.mw-photo-placeholder {
+  padding: 50px 30px; background: rgba(0,0,0,0.4);
+  text-align: center; color: rgba(255,255,255,0.3); font-size: 14px;
+}
+.mw-photo-placeholder span { font-size: 40px; display: block; margin-bottom: 8px; }
+.mw-photo-comment {
+  margin-top: 12px; padding: 10px 18px; border-radius: 12px;
+  background: rgba(210,100,79,0.12); border: 1px solid rgba(210,100,79,0.18);
+  font-size: 14px; color: var(--mw-red-light); font-style: italic; line-height: 1.6;
+}
+
+/* ---- 📊 Stats ---- */
+.mw-report-stats-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+}
+.mw-report-stat {
+  padding: 16px 10px; border-radius: 14px; text-align: center;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.05);
+}
+.mw-report-stat.warn { border-color: rgba(210,100,79,0.2); background: rgba(210,100,79,0.06); }
+.mw-rs-num {
+  display: block; font-family: Georgia, serif; font-size: 26px; font-weight: 700; color: #fff;
+}
+.mw-report-stat.warn .mw-rs-num { color: var(--mw-red-light); }
+.mw-rs-label { display: block; font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 4px; }
+
+.mw-report-domain-list { margin-top: 12px; font-size: 12px; color: rgba(255,255,255,0.4); }
+.mw-report-label { margin-right: 8px; }
+.mw-report-domain-tag {
+  display: inline-block; margin: 2px 4px; padding: 3px 10px;
+  border-radius: 999px; background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.5); font-size: 11px;
+}
+
+/* ---- 💰 Money ---- */
+.mw-money-section {
+  background: rgba(255,255,255,0.03); border-radius: 18px;
+  padding: 18px 20px; border: 1px solid rgba(255,255,255,0.05);
+}
+.mw-money-section h3 { margin-bottom: 8px; }
+.mw-money-intro { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 14px; }
+.mw-money-input-row { display: flex; align-items: center; gap: 10px; }
+.mw-money-yuan { font-size: 22px; font-weight: 700; color: rgba(255,255,255,0.6); }
+.mw-money-input {
+  flex: 1; padding: 12px 14px; border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px; background: rgba(0,0,0,0.25); color: #fff;
+  font-family: inherit; font-size: 18px; font-weight: 700; outline: none;
+}
+.mw-money-input:focus { border-color: var(--mw-red); }
+.mw-money-calc-btn {
+  padding: 12px 20px; border: none; border-radius: 12px;
+  background: var(--mw-red); color: #fff;
+  font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+  transition: all 0.2s; white-space: nowrap;
+}
+.mw-money-calc-btn:hover { background: #b84a36; }
+.mw-money-results { margin-top: 14px; }
+.mw-money-results.hidden { display: none; }
+.mw-money-card {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 14px 16px; border-radius: 14px; margin-top: 10px;
+  font-size: 13px; line-height: 1.7;
+}
+.mw-money-card.death {
+  background: rgba(210,100,79,0.1); border: 1px solid rgba(210,100,79,0.18);
+  color: var(--mw-red-light);
+}
+.mw-money-card.death strong { color: #ff6b4a; }
+.mw-money-emoji { font-size: 28px; flex-shrink: 0; }
+
+/* ---- 🎨 Alternatives ---- */
+.mw-alt-list { display: flex; flex-direction: column; gap: 6px; }
+.mw-alt-row {
+  display: grid; grid-template-columns: 32px 1fr auto auto;
+  align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: 12px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.04);
+  font-size: 13px; transition: background 0.15s;
+}
+.mw-alt-row:hover { background: rgba(255,255,255,0.06); }
+.mw-alt-emoji { font-size: 22px; }
+.mw-alt-desc { color: #d5d0c5; }
+.mw-alt-price { color: rgba(255,255,255,0.45); font-size: 12px; white-space: nowrap; }
+.mw-alt-remain { color: rgba(142,170,152,0.7); font-size: 11px; white-space: nowrap; }
+
+/* ---- 📊 Dissuasion ---- */
+.mw-dissuasion-section { text-align: center; }
+.mw-dissuasion-meter { display: flex; align-items: center; gap: 14px; justify-content: center; }
+.mw-dm-bar {
+  flex: 1; max-width: 300px; height: 18px; border-radius: 999px;
+  background: rgba(255,255,255,0.08); overflow: hidden;
+}
+.mw-dm-fill {
+  height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, var(--mw-red), var(--mw-red-light));
+  transition: width 0.6s cubic-bezier(0.22,0.61,0.36,1);
+}
+.mw-dm-pct { font-family: Georgia, serif; font-size: 32px; font-weight: 700; color: var(--mw-red-light); }
+.mw-dm-desc { margin-top: 10px; font-size: 13px; color: rgba(255,255,255,0.45); }
+
+/* ---- 🗣 Agent ---- */
+.mw-agent-comment {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 18px; border-radius: 16px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+}
+.mw-agent-avatar { font-size: 36px; flex-shrink: 0; }
+.mw-agent-bubble p {
+  font-family: Georgia, "Noto Serif SC", serif;
+  font-size: 16px; font-weight: 600; color: #f5e6c8; line-height: 1.7;
+}
+.mw-agent-sub { font-size: 12px !important; color: rgba(255,255,255,0.35) !important; margin-top: 8px !important; font-family: inherit !important; font-weight: 400 !important; }
+
+/* ---- Disclaimer ---- */
+.mw-report-disclaimer {
+  margin-top: 20px; padding: 14px 16px; border-radius: 12px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.04);
+  font-size: 11px; color: rgba(255,255,255,0.3); line-height: 1.8; text-align: center;
+}
+
+/* ---- Footer ---- */
+.mw-footer { padding: 20px 28px 28px; text-align: center; border-top: 1px solid rgba(255,255,255,0.06); }
+.mw-dismiss-btn {
+  width: 100%; padding: 14px 36px; border: none; border-radius: 14px;
+  background: linear-gradient(135deg, var(--mw-red), #b84a36);
+  color: #fff; font-family: inherit; font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s; letter-spacing: 0.04em;
+  box-shadow: 0 4px 20px rgba(210,100,79,0.3);
+}
+.mw-dismiss-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(210,100,79,0.45); }
+
+/* ---- Animations ---- */
+@keyframes mw-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes mw-slide-up {
+  from { opacity: 0; transform: translate(-50%,-50%) translateY(24px) scale(0.96); }
+  to { opacity: 1; transform: translate(-50%,-50%) translateY(0) scale(1); }
+}
+@keyframes mw-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+.mw-fade-out .mw-backdrop { animation: mw-fade-out 0.3s ease-in forwards; }
+.mw-fade-out .mw-dialog { animation: mw-slide-down 0.3s ease-in forwards; }
+@keyframes mw-fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes mw-slide-down {
+  from { opacity: 1; transform: translate(-50%,-50%) translateY(0) scale(1); }
+  to { opacity: 0; transform: translate(-50%,-50%) translateY(16px) scale(0.97); }
+}
+
+/* ---- Utilities ---- */
+.hidden { display: none !important; }
+
+/* ---- Responsive ---- */
+@media (max-width: 680px) {
+  .mw-dialog-capture { width: calc(100vw - 16px); border-radius: 18px; }
+  .mw-dialog-report, .mw-dialog-report-full { width: calc(100vw - 8px); border-radius: 16px; }
+  .mw-capture-header { padding: 22px 16px 0; }
+  .mw-capture-header h2 { font-size: 20px; }
+  .mw-capture-area { margin: 12px 16px 0; min-height: 220px; }
+  .mw-cap-video { min-height: 220px; max-height: 300px; }
+  .mw-cap-countdown-num { font-size: 52px; }
+  .mw-body { padding: 18px 18px; }
+  .mw-body-report { padding: 12px 14px; }
+  .mw-footer { padding: 14px 18px 22px; }
+  .mw-report-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .mw-alt-row { grid-template-columns: 28px 1fr; }
+  .mw-alt-price, .mw-alt-remain { display: none; }
+  .mw-agent-comment { flex-direction: column; align-items: center; text-align: center; }
+  .mw-money-input-row { flex-wrap: wrap; }
+}
